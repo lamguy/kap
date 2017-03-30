@@ -1,41 +1,63 @@
+import {src, dest, watch as watchSrc, parallel, series} from 'gulp';
 import babel from 'gulp-babel';
+import del from 'del';
 import cssnano from 'cssnano';
-import gulp from 'gulp';
 import injectSvg from 'gulp-inject-svg';
 import postcss from 'gulp-postcss';
 import postcssExtend from 'postcss-extend';
 import postcssNested from 'postcss-nested';
 import postcsssSimpleVars from 'postcss-simple-vars';
+import atImport from 'postcss-import';
+import reporter from 'postcss-reporter';
 import pug from 'gulp-pug';
 
-gulp.task('build:main', () =>
-  gulp.src('app/src/main/*.js')
-    .pipe(babel())
-    .pipe(gulp.dest('app/dist')));
+// Directories
+const SRC_DIR = 'app/src';
+const DIST_DIR = 'app/dist';
 
-gulp.task('build:pug', () =>
-  gulp.src('app/src/renderer/pug/*')
+// Source files
+const JS_GLOB = `${SRC_DIR}/**/*.js`;
+const CSS_GLOB = `${SRC_DIR}/**/*.css`;
+const CSS_PARTIALS_GLOB = `${SRC_DIR}/**/_*.css`;
+const VIEWS_GLOB = `${SRC_DIR}/**/*.pug`;
+const VIEWS_PARTIALS_GLOB = `${SRC_DIR}/**/_*.pug`;
+const SVG_GLOB = `app/static/**/*.svg`;
+
+// Clean DIST directory
+export function clean() {
+  return del([DIST_DIR]);
+}
+
+// JS Task
+export function scripts() {
+  return src(JS_GLOB, {base: SRC_DIR})
+    .pipe(babel())
+    .pipe(dest(DIST_DIR));
+}
+
+export function views() {
+  return src([VIEWS_GLOB, `!${VIEWS_PARTIALS_GLOB}`], {base: SRC_DIR})
     .pipe(pug())
     .pipe(injectSvg())
-    .pipe(gulp.dest('app/dist')));
+    .pipe(dest(DIST_DIR));
+}
 
-gulp.task('build:css', () =>
-  gulp.src('app/src/renderer/css/*')
-    .pipe(postcss([postcsssSimpleVars, postcssExtend, postcssNested, cssnano]))
-    .pipe(gulp.dest('app/dist')));
+export function styles() {
+  return src([CSS_GLOB, `!${CSS_PARTIALS_GLOB}`], {base: SRC_DIR})
+    .pipe(postcss([atImport, postcsssSimpleVars, postcssExtend, postcssNested, cssnano, reporter()]))
+    .pipe(dest(DIST_DIR));
+}
 
-gulp.task('build:js', () =>
-  gulp.src('app/src/renderer/js/*.js')
-    .pipe(babel())
-    .pipe(gulp.dest('app/dist')));
+export function watch() {
+  watchSrc(JS_GLOB, scripts);
+  watchSrc(CSS_GLOB, styles);
+  watchSrc(VIEWS_GLOB, views);
+  watchSrc(SVG_GLOB, views);
+}
 
-gulp.task('build', ['build:main', 'build:pug', 'build:css', 'build:js']);
+const mainTasks = parallel(scripts, styles, views);
+export const build = series(clean, mainTasks);
+export const dev = series(clean, mainTasks, watch);
 
-gulp.task('default', ['build']);
-
-gulp.task('watch', ['build'], () => {
-  gulp.watch('app/src/renderer/pug/*.pug', ['build:pug']);
-  gulp.watch('app/src/renderer/css/*.css', ['build:css']);
-  gulp.watch('app/src/renderer/js/*.js', ['build:js']);
-  gulp.watch('app/src/main/*.js', ['build:main']);
-});
+// Set default task
+export default build;

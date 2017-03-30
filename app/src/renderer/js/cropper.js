@@ -1,6 +1,6 @@
 import {ipcRenderer} from 'electron';
 
-require('./reporter');
+import {init as initErrorReporter} from '../../common/reporter';
 
 const arrows = {
   left: 37,
@@ -8,8 +8,6 @@ const arrows = {
   right: 39,
   down: 40
 };
-
-const ESC_KEY_CODE = 27;
 
 document.addEventListener('DOMContentLoaded', () => {
   function autoDestroy() {
@@ -34,8 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
       intervalId = undefined;
     }
 
-    if (event.keyCode === ESC_KEY_CODE) {
-      autoDestroy();
+    switch (event.key) {
+      case 'Escape':
+        autoDestroy();
+        break;
+      case 'Enter':
+        ipcRenderer.send('start-recording');
+        break;
+      case ' ':
+        ipcRenderer.send('start-recording');
+        break;
+      default:
+        break;
     }
   }
 
@@ -54,4 +62,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('keyup', keyUp, false);
   window.addEventListener('keydown', keyDown, false);
+  initErrorReporter();
 });

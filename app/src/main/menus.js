@@ -1,8 +1,19 @@
 import {app, Menu, shell} from 'electron';
 
-const signInForUpdates = {
-  label: 'Sign up for updates',
-  click: () => shell.openExternal('http://eepurl.com/ch90_1')
+import {checkForUpdates} from './auto-updater';
+
+const checkForUpdatesItem = {
+  label: 'Check for updates',
+  click(item) {
+    item.enabled = false;
+    checkForUpdates(() => {
+      // this will be called if no update is available
+      app.kap.mainWindow.webContents.send('show-notification', {
+        title: 'No updates available!',
+        body: 'You will automatically receive updates as soon as they are available 🤗'
+      });
+    });
+  }
 };
 
 const cogMenu = [
@@ -12,13 +23,23 @@ const cogMenu = [
   {
     type: 'separator'
   },
-  signInForUpdates,
+  {
+    label: 'Preferences...',
+    accelerator: 'Cmd+,',
+    click() {
+      app.kap.openPrefsWindow();
+    }
+  },
+  {
+    type: 'separator'
+  },
+  checkForUpdatesItem,
   {
     type: 'separator'
   },
   {
     role: 'quit',
-    id: 'quit'
+    accelerator: 'Cmd+Q'
   }
 ];
 
@@ -32,7 +53,17 @@ const applicationMenu = [
       {
         type: 'separator'
       },
-      signInForUpdates,
+      {
+        label: 'Preferences...',
+        accelerator: 'Cmd+,',
+        click() {
+          app.kap.openPrefsWindow();
+        }
+      },
+      checkForUpdatesItem,
+      {
+        type: 'separator'
+      },
       {
         label: 'Contribute',
         click: () => shell.openExternal('https://github.com/wulkano/kap')
@@ -78,9 +109,16 @@ const applicationMenu = [
         type: 'separator'
       },
       {
+        type: 'separator'
+      },
+      {
         label: 'Close',
         accelerator: 'CmdOrCtrl+W',
-        role: 'close'
+        click(item, focusedWindow) {
+          if (focusedWindow) {
+            focusedWindow.hide();
+          }
+        }
       }
     ]
   },

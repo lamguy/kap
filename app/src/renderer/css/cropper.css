@@ -1,4 +1,6 @@
-html, body {
+@import 'eightpoint/dist/eight.min';
+
+html, body, .content {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -25,12 +27,12 @@ svg {
 rect.stroke-black {
   stroke: black;
   fill: none;
-  stroke-width: 3px;
+  stroke-width: 2px;
 }
 
 rect.stroke-white {
   stroke: white;
   fill: none;
-  stroke-dasharray: 3,3;
-  stroke-width: 3px;
+  stroke-dasharray: 4;
+  stroke-width: 2px;
 }
