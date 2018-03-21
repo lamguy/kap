@@ -9,27 +9,19 @@
 
 **[Download the latest release](https://getkap.co/download)** (macOS only)
 
-Or install with [Homebrew Cask](https://caskroom.github.io):
+Or install with [Homebrew-Cask](https://caskroom.github.io):
 
 ```
-$ brew update
-$ brew cask install kap
+$ brew update && brew cask install kap
 ```
 
 ## Contribute
 
-1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device
-2. Install the dependencies: `npm install`
-3. Build the code and watch for changes: `npm run dev`
-4. Run the app: `npm start`
+Read the [contribution guide](contributing.md).
 
-To make sure that your code works in the finished app, you can generate the binary:
+## Dev builds
 
-```
-$ npm run pack
-```
-
-After that, you'll see the binary in the `./dist` folder :smile:
+Download [`master`](https://kap-artifacts.now.sh/master) or builds for any other branch using: `https://kap-artifacts.now.sh/<branch>`. Note that these builds are unsupported and may have issues.<br>
 
 ## Related Repositories
 
@@ -42,6 +34,7 @@ After that, you'll see the binary in the `./dist` folder :smile:
 
 ## Thanks
 
-- [▲ZEIT](https://github.com/zeit) for the README formatting and for [hosting our downloads and updates](https://zeit.co/now/)
-- [⬤CircleCI](https://circleci.com/) for supporting the Open Source community and making our builds fast and reliable
-- Our contributors who help Kap in its journey to make screen recording and sharing easy
+- [▲ ZEIT](https://zeit.co/) for the README formatting and for [hosting our downloads and updates](https://zeit.co/now/).
+- [⬤ CircleCI](https://circleci.com/) for supporting the Open Source community and making our builds fast and reliable.
+- [△ Sentry](https://sentry.io/) for letting us know when Kap isn't behaving and helping us eradicate said behaviour.
+- Our [contributors](https://github.com/wulkano/kap/contributors) who help maintain Kap and make screen recording and sharing easy.

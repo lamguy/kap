@@ -6,21 +6,23 @@ block head
   +script('preferences')
 
 block body
-  +window-header(title='Preferences')
+  +window-header(title='Preferences' invisibleControls).is-large.is-draggable
     nav.prefs-nav
-      a.show-general-prefs.is-active(href)
+      a.is-active(href data-pane='general' title='General')
         +icon('settings')
-      a.show-advanced-prefs(href)
+      a(href data-pane='advanced' title='Advanced')
         +icon('tune')
+      a(href data-pane='plugins' title='Plugins')
+        +icon('ic_add_box_24px')
   .prefs-sections
     section.js-prefs-section.settings
-    section.general-prefs
+    section(data-pane='general')
       .preference.container
         .preference-part
           .preference-content
-            .preference__title Save to...
+            .preference__title Save to…
             .preference__description.js-save-to-description
-          .preference-input.c-toggle
+          .preference-input
             button.button--secondary.js-choose-save Choose
       .preference.container
         .preference-part
@@ -36,7 +38,7 @@ block body
           +toggle('allow-analytics')
 
     //- Advanced preferences
-    section.advanced-prefs.hidden
+    section.hidden(data-pane='advanced')
       .preference.container
         .preference-part
           .preference-content
@@ -47,17 +49,40 @@ block body
           .preference-content
             .preference__description Highlight clicks
           +toggle('highlight-clicks')
+        .preference-part.experimental
+          .preference-content
+            .preference__title Hide desktop icons
+            .preference__description Temporarily hide the desktop icons while recording
+          +toggle('hide-desktop-icons')
+        .preference-part.experimental
+          .preference-content
+            .preference__title Do Not Disturb
+            .preference__description Activate “Do Not Disturb” while recording
+          +toggle('do-not-disturb')
       .preference.container
         .preference-part
           .preference-content
-            .preference__title Capture frame rate
-            .preference__description Capturing at a higher frame rate might impact performance
-          +range(hasLabels=true min='16' max='60' lowLabel='Low' middleLabel='30FPS' highLabel='High').preference-input.fps-slider
+            .preference__title Capture at 60 FPS
+            .preference__description The default is 30 FPS
+          +toggle('record-60fps')
       .preference.container
         .preference-part
           .preference-content
             .preference__title Record audio
             .preference__description Select input device
-          .select-element(style="width: 17.8rem")
-            select.js-audio-input-device-selector
-              option(value='none') None
+          .preference-input
+            +select-custom
+              select.js-audio-input-device-selector
+      .preference.container
+        .preference-part
+          .preference-content
+            .preference__title Keyboard shortcut to record
+            .preference__description Start recording by pressing Command+Shift+5.<br>Turn this off if it conflicts with other apps. In the future, we'll make the shortcut configurable. You have to restart Kap for this to take effect.
+          +toggle('record-keyboard-shortcut')
+
+    //- Plugins preferences
+    section.plugins-prefs.hidden(data-pane='plugins')
+      nav.plugins-list(id='plugins-installed')
+      nav.plugins-list(id='plugins-available')
+      .container.u-padding-bottom.u-padding-top
+        a.o-link.js-open-plugins(href) Open plugins folder

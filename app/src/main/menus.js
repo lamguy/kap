@@ -1,22 +1,21 @@
-import {app, Menu, shell} from 'electron';
-
+import {app, Menu, shell, ipcMain, Notification} from 'electron';
 import {checkForUpdates} from './auto-updater';
 
 const checkForUpdatesItem = {
-  label: 'Check for updates',
+  label: 'Check for Updates…',
   click(item) {
     item.enabled = false;
     checkForUpdates(() => {
-      // this will be called if no update is available
-      app.kap.mainWindow.webContents.send('show-notification', {
+      // This will be called if no update is available
+      (new Notification({
         title: 'No updates available!',
         body: 'You will automatically receive updates as soon as they are available 🤗'
-      });
+      })).show();
     });
   }
 };
 
-const cogMenu = [
+export const cogMenu = Menu.buildFromTemplate([
   {
     role: 'about'
   },
@@ -24,7 +23,7 @@ const cogMenu = [
     type: 'separator'
   },
   {
-    label: 'Preferences...',
+    label: 'Preferences…',
     accelerator: 'Cmd+,',
     click() {
       app.kap.openPrefsWindow();
@@ -41,9 +40,9 @@ const cogMenu = [
     role: 'quit',
     accelerator: 'Cmd+Q'
   }
-];
+]);
 
-const applicationMenu = [
+export const applicationMenu = Menu.buildFromTemplate([
   {
     label: app.getName(),
     submenu: [
@@ -54,7 +53,7 @@ const applicationMenu = [
         type: 'separator'
       },
       {
-        label: 'Preferences...',
+        label: 'Preferences…',
         accelerator: 'Cmd+,',
         click() {
           app.kap.openPrefsWindow();
@@ -116,6 +115,11 @@ const applicationMenu = [
         accelerator: 'CmdOrCtrl+W',
         click(item, focusedWindow) {
           if (focusedWindow) {
+            if (focusedWindow === app.kap.editorWindow) {
+              ipcMain.emit('close-editor-window');
+              return;
+            }
+
             focusedWindow.hide();
           }
         }
@@ -155,15 +159,6 @@ const applicationMenu = [
     label: 'View',
     submenu: [
       {
-        label: 'Reload',
-        accelerator: 'CmdOrCtrl+R',
-        click(item, focusedWindow) {
-          if (focusedWindow) {
-            focusedWindow.reload();
-          }
-        }
-      },
-      {
         label: 'Toggle Developer Tools',
         accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
         click(item, focusedWindow) {
@@ -194,12 +189,9 @@ const applicationMenu = [
         click: () => shell.openExternal('https://getkap.co')
       },
       {
-        label: 'GitHub repository',
+        label: 'GitHub Repository',
         click: () => shell.openExternal('https://github.com/wulkano/kap')
       }
     ]
   }
-];
-
-exports.applicationMenu = Menu.buildFromTemplate(applicationMenu);
-exports.cogMenu = Menu.buildFromTemplate(cogMenu);
+]);

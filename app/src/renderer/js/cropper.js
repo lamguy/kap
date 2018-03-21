@@ -1,27 +1,26 @@
 import {ipcRenderer} from 'electron';
-
 import {init as initErrorReporter} from '../../common/reporter';
 
 const arrows = {
-  left: 37,
-  up: 38,
-  right: 39,
-  down: 40
+  left: 'ArrowLeft',
+  up: 'ArrowUp',
+  right: 'ArrowRight',
+  down: 'ArrowDown'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  function autoDestroy() {
+  const autoDestroy = () => {
     ipcRenderer.send('close-cropper-window');
-  }
+  };
 
-  function move(direction, amount) {
+  const move = (direction, amount) => {
     ipcRenderer.send('move-cropper-window', {direction, amount});
-  }
+  };
 
   let intervalId;
   let timeoutId;
 
-  function keyUp(event) {
+  const keyUp = event => {
     if (timeoutId) {
       clearTimeout(timeoutId);
       timeoutId = undefined;
@@ -45,12 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
       default:
         break;
     }
-  }
+  };
 
-  function keyDown(event) {
+  const keyDown = event => {
     if (!timeoutId && !intervalId) {
-      const direction = Object.keys(arrows).find(key => arrows[key] === event.keyCode);
+      const direction = Object.keys(arrows).find(key => arrows[key] === event.key);
       const amount = event.shiftKey ? 10 : 1;
+
       if (direction) {
         move(direction, amount);
         timeoutId = setTimeout(() => {
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 250);
       }
     }
-  }
+  };
 
   window.addEventListener('keyup', keyUp, false);
   window.addEventListener('keydown', keyDown, false);

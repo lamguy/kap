@@ -1,21 +1,55 @@
+import os from 'os';
 import isDev from 'electron-is-dev';
+import unhandled from 'electron-unhandled';
+import util from 'electron-util';
 
-let ravenClient;
+let Raven;
 
-function init() {
-  if (!isDev) {
-    const raven = require('raven');
-
-    ravenClient = new raven.Client('https://dde0663d852241628dca445a0b28d3f1:354142c4b46c4894b3ba876ce803bb6f@sentry.io/101586');
-    ravenClient.patchGlobal();
+export const init = () => {
+  if (isDev) {
+    return;
   }
-}
 
-function report(err) {
-  if (!isDev && err) {
-    ravenClient.captureException(err);
+  let dsn;
+
+  if (process.type === 'renderer') {
+    Raven = require('raven-js');
+    dsn = 'https://2dffdbd619f34418817f4db3309299ce@sentry.io/255536';
+  } else {
+    Raven = require('raven');
+    dsn = 'https://2dffdbd619f34418817f4db3309299ce:5d2b3b543a3a433abe928e39aff485fd@sentry.io/255536';
   }
-}
 
-exports.init = init;
-exports.report = report;
+  Raven.config(dsn, {
+    captureUnhandledRejections: false,
+    release: util.api.app.getVersion(),
+    tags: {
+      process: process.type,
+      electron: process.versions.electron,
+      chrome: process.versions.chrome,
+      platform: os.platform(),
+      platform_release: os.release(), // eslint-disable-line camelcase
+      locale: util.api.app.getLocale()
+    }
+  }).install();
+};
+
+export const report = err => {
+  console.error(err);
+
+  if (!isDev && Raven && err) {
+    Raven.captureException(err);
+  }
+};
+
+export const log = message => {
+  if (!isDev && Raven && message) {
+    // TODO: Enable this again when we figure out how to have
+    // logs only attached to actual errors and not spam Slack
+    // Raven.captureMessage(message);
+  }
+};
+
+unhandled({
+  logger: report
+});

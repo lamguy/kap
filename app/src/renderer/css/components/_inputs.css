@@ -8,56 +8,157 @@
 */
 
 /* Ensure focus on inputs doesn't allow app dragging */
-input { -webkit-app-region: no-drag; }
+input {
+  -webkit-app-region: no-drag;
+}
 
 /*
   Custom select element styling
   - Use `select` tag wrapped within div with the class of `.select-element`.
 */
-.select-element {
-  position: relative;
-  height: 24px;
+.c-select {
   width: 100%;
-  border-radius: 3px;
-  background-color: $grey;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .2), 0 0 0 1px rgba(0, 0, 0, .1), inset 0 1px rgba(255, 255, 255, .05);
-  color: white;
+  height: 2.4rem;
+  padding-right: 32px;
+  border: 1px solid $gray-light;
+  border-radius: 4px;
+  position: relative;
+  color: $color-primary;
+  background-color: #fff;
+  transition:
+    border 0.12s ease-in-out,
+    background 0.12s ease-in-out;
 
-  &:after {
-    display: block;
-    content: '\25be';
-    text-align: center;
-    font-size: 1.2rem;
-    pointer-events: none;
-    color: $grey-light;
-    width: 16px;
-    height: 24px;
-    top: 0;
-    right: 4px;
-    position: absolute;
+  &:focus {
+    border-color: $blue;
   }
 
-  select {
+  &:hover:not(:focus) {
+    border-color: $gray-dark;
+  }
+
+  button {
+    text-align: left;
+  }
+
+  select,
+  button {
     width: 100%;
-    -webkit-appearance: none;
-    height: 24px;
-    padding-left: 8px;
-    padding-right: 8px;
-    position: relative;
-    background: transparent;
+    height: 2.4rem;
+    padding-right: 12px;
+    padding-left: 12px;
     border: none;
+    position: relative;
     top: -1px;
-    color: white;
+    color: $color-primary;
+    background: transparent;
+    font-size: 1.4rem;
+    line-height: 2.4rem;
+    -webkit-appearance: none;
+  }
+
+  &--large {
+    height: 3.2rem;
+
+    select,
+    button {
+      height: 3.2rem;
+    }
+
+    select {
+      line-height: 3.2rem;
+    }
+  }
+
+  &__toggle-icon {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    fill: $gray-dark;
+  }
+
+  &.has-icon {
+    select,
+    button {
+      padding-left: 32px;
+    }
+
+    svg:not(.c-select__toggle-icon) {
+      position: absolute;
+      top: 50%;
+      left: 8px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      fill: $gray-darker;
+    }
+  }
+
+  &.has-custom-label {
+    padding-left: 8px;
+    font-size: 1.2rem;
+
+    .c-select__label {
+      display: flex;
+      height: 100%;
+      align-items: center;
+    }
+
+    select {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      opacity: 0;
+    }
   }
 
   &.is-light {
-    background: white;
-    background-position: 0 0, 100% 0;
+    background: #fff;
+    background-color: $gray-lightest;
     background-repeat: no-repeat;
+    background-position: 0 0, 100% 0;
     background-size: 1px 100%;
-    background-color: #F9F9F9;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 0 0 1px rgba(0, 0, 0, .1), inset 0 1px white, inset 0 1px rgba(255, 255, 255, 1);
-    select { color: $color-primary; }
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(0, 0, 0, 0.1),
+      inset 0 1px #fff,
+      inset 0 1px rgba(255, 255, 255, 1);
+
+    select {
+      color: $color-primary;
+    }
+  }
+
+  &.is-transparent {
+    border-color: transparent;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+
+    select {
+      color: #fff;
+    }
+
+    .c-select__toggle-icon {
+      fill: #fff;
+    }
+
+    &:hover {
+      border-color: transparent;
+      background: rgba(255, 255, 255, 0.2);
+
+      .c-select__toggle-icon {
+        fill: $blue;
+      }
+    }
+  }
+
+  &.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
   }
 }
 
@@ -67,17 +168,49 @@ input { -webkit-app-region: no-drag; }
   - For joined together input styling
 */
 .input-group {
-  input, input[type=text] {
-    margin-right: 0;
-    border-radius: 0;
+  display: flex;
 
-    &:not(:last-child) { border-right-color: transparent; }
-    &:first-child:not(:only-child) { border-radius: 3px 0 0 3px; }
-    &:last-child:not(:only-child) { border-radius: 0 3px 3px 0; }
+  input,
+  input[type='text'] {
+    border-radius: 0;
+    margin-right: 0;
+
+    &:not(:last-child) {
+      border-right-color: transparent;
+    }
+
+    &:first-child:not(:only-child) {
+      border-radius: 4px 0 0 4px;
+    }
+
+    &:last-child:not(:only-child) {
+      border-radius: 0 4px 4px 0;
+    }
 
     &:focus {
-      border-color: #3B99FC;
-      & + input { border-left-color: transparent; }
+      border-color: $blue;
+
+      & + input {
+        border-left-color: transparent;
+      }
+    }
+  }
+
+  &.is-transparent {
+    input {
+      border-color: transparent;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+
+      &:not(:last-of-type) {
+        border-right: 1px solid rgba(0, 0, 0, 0.2);
+      }
+
+      &:hover,
+      &:focus {
+        border-color: transparent;
+        background: rgba(255, 255, 255, 0.2);
+      }
     }
   }
 }
@@ -86,15 +219,35 @@ input { -webkit-app-region: no-drag; }
 /*
   Custom input styling
 */
-input, .input {
-  border-radius: 3px;
-  background: white;
-  border: 0;
+input,
+.c-input {
   height: 2.4rem;
   padding: 0 0.8rem;
-  background-color: #2D2D2D;
-  color: white;
-  border: 1px solid #545454;
+  border: 1px solid $gray-light;
+  border-radius: 4px;
+  color: $color-primary;
+  background-color: #fff;
+  font-size: 1.4rem;
+  transition: border 0.12s ease-in-out, background 0.12s ease-in-out;
 
-  &:focus { border-color: #3B99FC; }
+  &:focus {
+    border-color: $blue;
+  }
+
+  &:hover:not(:focus) {
+    border-color: $gray-dark;
+  }
+
+  &.is-transparent {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+.c-input--large {
+  height: 3.2rem;
 }

@@ -1,46 +1,47 @@
 {
-  "repository": "wulkano/kap",
-  "author": "Wulkano AS <team@wulka.no> (https://wulka.no/)",
-  "license": "MIT",
   "scripts": {
     "test": "xo",
+    "start": "electron app",
     "build": "npm run test && gulp build",
-    "dev": "gulp dev",
-    "app": "electron app",
-    "start": "npm run app",
+    "watch": "gulp dev --continue",
+    "dev": "gulp build && run-p start watch",
     "dist": "npm run build && build",
     "pack": "npm run build && build --dir",
-    "postinstall": "install-app-deps && npm run ffmpeg",
-    "prepush": "npm run test",
-    "ffmpeg": "node scripts/download-ffmpeg.js"
+    "postinstall": "electron-builder install-app-deps",
+    "prepush": "npm run test"
   },
   "devDependencies": {
-    "babel-plugin-transform-es2015-modules-commonjs": "6.16.0",
-    "chalk": "1.1.3",
-    "cssnano": "3.7.7",
-    "del": "2.2.2",
-    "eightpoint": "0.0.1",
-    "electron": "1.5.1",
-    "electron-builder": "7.11.4",
-    "execa": "0.5.0",
-    "got": "6.5.0",
-    "gulp": "gulpjs/gulp#4.0",
-    "gulp-babel": "6.1.2",
-    "gulp-inject-svg": "0.1.9",
-    "gulp-postcss": "6.2.0",
-    "gulp-pug": "3.1.0",
-    "husky": "0.11.9",
-    "ora": "0.3.0",
-    "postcss-extend": "1.0.5",
-    "postcss-import": "8.1.2",
-    "postcss-nested": "1.0.0",
-    "postcss-reporter": "2.0.0",
-    "postcss-simple-vars": "3.0.0",
-    "xo": "0.17.0"
+    "babel-core": "^6.26.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-preset-stage-3": "^6.24.1",
+    "cssnano": "^3.10.0",
+    "del": "^3.0.0",
+    "devtron": "^1.4.0",
+    "electron": "^1.7.11",
+    "electron-builder": "^20.2.0",
+    "electron-react-devtools": "^0.5.2",
+    "gulp": "^4.0.0",
+    "gulp-babel": "^7.0.0",
+    "gulp-filter": "^5.0.1",
+    "gulp-inject-svg": "^0.1.16",
+    "gulp-postcss": "^7.0.0",
+    "gulp-pug": "^3.3.0",
+    "gulp-stylelint": "^6.0.0",
+    "husky": "^0.14.3",
+    "npm-run-all": "^4.1.2",
+    "postcss-each": "^0.10.0",
+    "postcss-extend": "^1.0.5",
+    "postcss-import": "^11.0.0",
+    "postcss-nested": "^3.0.0",
+    "postcss-reporter": "^5.0.0",
+    "postcss-simple-vars": "^4.1.0",
+    "stylelint": "^9.1.1",
+    "stylelint-config-xo-space": "^0.6.0",
+    "xo": "^0.20.3"
   },
   "xo": {
     "space": 2,
-    "esnext": true,
     "envs": [
       "node",
       "browser"
@@ -54,20 +55,64 @@
       "app/dist/**"
     ]
   },
+  "stylelint": {
+    "extends": "stylelint-config-xo-space",
+    "rules": {
+      "at-rule-no-unknown": [
+        true,
+        {
+          "ignoreAtRules": [
+            "extend",
+            "each"
+          ]
+        }
+      ],
+      "no-descending-specificity": null,
+      "declaration-no-important": null,
+      "property-no-vendor-prefix": null,
+      "declaration-property-value-blacklist": null,
+      "selector-class-pattern": null
+    }
+  },
   "build": {
-    "asar": false,
     "appId": "com.wulkano.kap",
-    "category": "public.app-category.productivity",
     "files": [
       "**/*",
-      "!src",
-      "!main.js"
-    ]
+      "dist",
+      "!src"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "minimumSystemVersion": "10.12.0"
+    },
+    "dmg": {
+      "iconSize": 160,
+      "contents": [
+        {
+          "x": 180,
+          "y": 170
+        },
+        {
+          "x": 480,
+          "y": 170,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
   },
   "babel": {
+    "presets": [
+      "stage-3"
+    ],
     "plugins": [
-      "transform-es2015-modules-commonjs"
+      "transform-es2015-modules-commonjs",
+      [
+        "transform-class-properties",
+        {
+          "spec": true
+        }
+      ]
     ]
-  },
-  "dependencies": {}
+  }
 }
